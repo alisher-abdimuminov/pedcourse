@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kurs Tafsilotlari | LMS-Pedagogika</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900">
+
+    <nav class="fixed w-full z-50 glass-effect border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <a href="/" class="flex items-center gap-2">
+                    <div
+                        class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                        P</div>
+                    <span class="text-xl font-bold tracking-tight text-blue-900 uppercase">LMS-PEDAGOGIKA</span>
+                </a>
+                <div class="hidden md:flex space-x-8 font-medium text-slate-600">
+                    <a href="/" class="hover:text-blue-600">Asosiy</a>
+                    <a href="{% url 'courses' %}" class="hover:text-blue-600">Kurslar</a>
+                </div>
+                {% if not user.is_authenticated %}
+                <a href="{% url 'login' %}"
+                    class="bg-blue-600 text-white px-5 py-2 rounded-full font-semibold">Kirish</a>
+                {% else %}
+                <span class="font-semibold text-slate-700">{{ user.first_name }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <header class="pt-28 pb-12 bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 grid lg:grid-cols-3 gap-12">
+            <div class="lg:col-span-2">
+                <nav class="flex text-sm text-slate-400 mb-6 gap-2">
+                    <a href="{% url 'courses' %}" class="hover:text-white text-blue-400">Kurslar</a> <span>/</span>
+                    <span class="text-slate-300">{{ course.subject }}</span>
+                </nav>
+                <h1 class="text-3xl md:text-5xl font-extrabold leading-tight mb-6 italic">
+                    {{ course.name }}
+                </h1>
+                <p class="text-lg text-slate-300 mb-8 max-w-2xl">
+                    {{ course.description|truncatewords:40 }}
+                </p>
+                <div class="flex flex-wrap gap-6 items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="text-amber-400 font-bold text-lg">★ 4.9</span>
+                    </div>
+                    <div class="text-slate-300">Muallif: <span class="text-white font-semibold underline">
+                            {{course.author.get_full_name }}
+                        </span></div>
+                    <div class="text-slate-300">Yangilandi: <span class="text-white">
+                            {{ course.updated_at|date:"M, Y"}}
+                        </span></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="grid lg:grid-cols-3 gap-12">
+
+            <div class="lg:col-span-2 space-y-12">
+
+                <div>
+                    <h2 class="text-2xl font-bold mb-6">Kurs mundarijasi</h2>
+                    <div class="space-y-3">
+                        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                            <div class="w-full flex items-center justify-between p-5 bg-slate-50 font-bold">
+                                <span>Kurs darslari</span>
+                                <span class="text-slate-500 font-medium">{{ lessons_count }} ta dars</span>
+                            </div>
+                            <div class="bg-white border-t border-slate-200">
+                                {% for lesson in lessons %}
+                                <div
+                                    class="flex items-center justify-between p-5 border-b border-slate-50 last:border-0">
+                                    <div class="flex items-center gap-3">
+                                        {% if user.is_authenticated %}
+                                        <div
+                                            class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px]">
+                                            ▶</div>
+                                        <a href="{% url 'lesson' lesson.id %}"
+                                            class="text-slate-700 hover:text-blue-600 font-medium">{{ lesson.name }}</a>
+                                        {% else %}
+                                        <div
+                                            class="w-6 h-6 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-[10px]">
+                                            🔒</div>
+                                        <span class="text-slate-400">{{ lesson.name }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% if not user.is_authenticated %}
+                                    <span class="text-xs text-slate-400 italic">Kirish kerak</span>
+                                    {% endif %}
+                                </div>
+                                {% empty %}
+                                <div class="p-5 text-slate-500 italic">Hozircha darslar yuklanmagan.</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="sticky top-24 bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden">
+                    {% if course.image %}
+                    <img src="{{ course.image.url }}" alt="{{ course.name }}" class="w-full h-48 object-cover">
+                    {% endif %}
+                    <div class="p-8">
+                        <div class="flex items-center gap-4 mb-6">
+                            <span class="text-3xl font-extrabold text-slate-900">
+                                {% if course.price == 0 %}Bepul{% else %}{{ course.price }} so'm{% endif %}
+                            </span>
+                        </div>
+
+                        {% if user.is_authenticated %}
+                        <button
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold text-lg mb-4 shadow-lg transition transform active:scale-[0.98]">
+                            O'rganishni boshlash
+                        </button>
+                        {% else %}
+                        <a href="{% url 'login' %}"
+                            class="block text-center w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg mb-4 shadow-lg">
+                            Kirish va yozilish
+                        </a>
+                        {% endif %}
+
+                        <div class="space-y-4 mt-8">
+                            <h4 class="font-bold text-slate-900 uppercase text-xs tracking-widest border-b pb-2">Kurs
+                                statistikasi:</h4>
+                            <ul class="text-sm space-y-4 text-slate-600">
+                                <li class="flex items-center gap-3"><span>📺</span> {{ lessons_count }} ta dars</li>
+                                <li class="flex items-center gap-3"><span>♾️</span> Umrbod foydalanish huquqi</li>
+                                <li class="flex items-center gap-3"><span>🏆</span> Sertifikat</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-white py-12 px-4 mt-20">
+        <div
+            class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center border-b border-slate-800 pb-8">
+            <div class="flex items-center gap-2 mb-4 md:mb-0">
+                <div class="w-8 h-8 bg-blue-500 rounded flex items-center justify-center font-bold">P</div>
+                <span class="text-xl font-bold tracking-tight">LMS-PEDAGOGIKA</span>
+            </div>
+            <div class="flex space-x-6 text-slate-400 italic">
+                <a href="#" class="hover:text-white">Telegram</a>
+                <a href="#" class="hover:text-white">Instagram</a>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto mt-8 text-center text-slate-500 text-sm italic">
+            &copy; 2026 LMS-Pedagogika. Barcha huquqlar himoyalangan.
+        </div>
+    </footer>
+
+
+</body>
+
+</html>

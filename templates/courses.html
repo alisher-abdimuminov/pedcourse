@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kurslar | LMS-Pedagogika</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Qidiruv va filter uchun silliq scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900">
+
+    <nav class="fixed w-full z-50 glass-effect border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <a href="/" class="flex items-center gap-2">
+                        <div
+                            class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                            P</div>
+                        <span class="text-xl font-bold tracking-tight text-blue-900">LMS-PEDAGOGIKA</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8 font-medium text-slate-600">
+                    <a href="/" class="hover:text-blue-600 transition">Asosiy</a>
+                    <a href="{% url 'courses' %}" class="text-blue-600 border-b-2 border-blue-600">Kurslar</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    {% if user.is_authenticated %}
+                    <span class="text-sm font-medium text-slate-700 hidden sm:block">{{ user.get_full_name }}</span>
+                    <div
+                        class="w-10 h-10 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center font-bold text-blue-600">
+                        {{ user.first_name|first }}{{ user.last_name|first }}
+                    </div>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="text-blue-600 font-semibold">Kirish</a>
+                    <a href="{% url 'signup' %}"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold">Ro'yxatdan o'tish</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-32 pb-10 px-4 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <h1 class="text-4xl font-extrabold text-slate-900 italic">Barcha kurslar</h1>
+                    <p class="text-slate-500 mt-2">O'zingizga mos yo'nalishni tanlang va bilim olishni boshlang.</p>
+                </div>
+
+                <form method="GET" action="{% url 'courses' %}" class="relative w-full md:w-96">
+                    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Kurs qidirish..."
+                        class="w-full pl-12 pr-4 py-3 bg-slate-100 border-none rounded-2xl focus:ring-2 focus:ring-blue-400 transition outline-none">
+                    <div class="absolute left-4 top-3.5 text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                </form>
+            </div>
+
+            <div class="flex gap-3 mt-10 overflow-x-auto pb-2 no-scrollbar">
+                <a href="{% url 'courses' %}"
+                    class="px-6 py-2.5 rounded-xl font-semibold whitespace-nowrap transition {% if not active_subject %}bg-blue-600 text-white shadow-lg shadow-blue-100{% else %}bg-white border border-slate-200 text-slate-600 hover:bg-slate-50{% endif %}">
+                    Barchasi
+                </a>
+                {% for sub in subjects %}
+                <a href="?subject={{ sub }}"
+                    class="px-6 py-2.5 rounded-xl font-semibold whitespace-nowrap transition {% if active_subject == sub %}bg-blue-600 text-white shadow-lg shadow-blue-100{% else %}bg-white border border-slate-200 text-slate-600 hover:bg-slate-50{% endif %}">
+                    {{ sub }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            {% for course in courses %}
+            <div
+                class="group bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="relative h-48 overflow-hidden">
+                    {% if course.image %}
+                    <img src="{{ course.image.url }}" alt="{{ course.name }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    {% else %}
+                    <div class="w-full h-full bg-slate-200 flex items-center justify-center text-slate-400 italic">Rasm
+                        mavjud emas</div>
+                    {% endif %}
+                    <span
+                        class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-blue-600 uppercase">
+                        {{ course.subject }}
+                    </span>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-2 text-sm text-amber-500 font-bold mb-2">
+                        <span>★ 4.8</span> <span class="text-slate-400 font-normal italic">(Yangi)</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2 leading-snug group-hover:text-blue-600 transition">
+                        {{ course.name }}
+                    </h3>
+                    <p class="text-slate-500 text-sm line-clamp-2 mb-6 italic">{{ course.description }}</p>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-50">
+                        <div class="flex items-center gap-2">
+                            <div
+                                class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600">
+                                {{ course.author.first_name|first }}{{ course.author.last_name|first }}
+                            </div>
+                            <span class="text-sm font-medium text-slate-700">{{ course.author.get_full_name }}</span>
+                        </div>
+                        <div class="text-lg font-bold text-blue-600">
+                            {% if course.price == 0 %}Bepul{% else %}{{ course.price }} so'm{% endif %}
+                        </div>
+                    </div>
+
+                    <a href="{% url 'course' course.id %}"
+                        class="block mt-4 text-center py-2.5 bg-slate-50 hover:bg-blue-600 hover:text-white text-blue-600 rounded-xl font-bold transition-all">
+                        Kursni ko'rish
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full py-20 text-center">
+                <div class="text-6xl mb-4">🔍</div>
+                <h3 class="text-xl font-bold text-slate-800">Kurslar topilmadi</h3>
+                <p class="text-slate-500">Qidiruv so'rovini o'zgartirib ko'ring yoki boshqa kategoriyani tanlang.</p>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="max-w-7xl mx-auto mt-16 flex justify-center">
+            <nav class="flex gap-2">
+                <button
+                    class="w-12 h-12 flex items-center justify-center rounded-xl border border-slate-200 hover:bg-blue-50 transition">←</button>
+                <button
+                    class="w-12 h-12 flex items-center justify-center rounded-xl bg-blue-600 text-white font-bold">1</button>
+                <button
+                    class="w-12 h-12 flex items-center justify-center rounded-xl border border-slate-200 hover:bg-blue-50 transition">→</button>
+            </nav>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 text-white py-12 px-4 mt-20">
+        <div
+            class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center border-b border-slate-800 pb-8">
+            <div class="flex items-center gap-2 mb-4 md:mb-0">
+                <div class="w-8 h-8 bg-blue-500 rounded flex items-center justify-center font-bold">P</div>
+                <span class="text-xl font-bold tracking-tight">LMS-PEDAGOGIKA</span>
+            </div>
+            <div class="flex space-x-6 text-slate-400 italic">
+                <a href="#" class="hover:text-white">Telegram</a>
+                <a href="#" class="hover:text-white">Instagram</a>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto mt-8 text-center text-slate-500 text-sm italic">
+            &copy; 2026 LMS-Pedagogika. Barcha huquqlar himoyalangan.
+        </div>
+    </footer>
+
+</body>
+
+</html>

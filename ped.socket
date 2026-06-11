@@ -1,0 +1,8 @@
+[Unit]
+Description=ped socket
+
+[Socket]
+ListenStream=/run/ped.sock
+
+[Install]
+WantedBy=sockets.target
