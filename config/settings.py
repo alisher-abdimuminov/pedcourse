@@ -87,7 +87,7 @@ STATIC_ROOT = "static"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-CSRF_TRUSTED_ORIGINS = ["inclusive-course.uz", "127.0.0.1", "localhost"]
+CSRF_TRUSTED_ORIGINS = ["https://inclusive-course.uz", "127.0.0.1", "localhost"]
 
 
 UNFOLD = {
