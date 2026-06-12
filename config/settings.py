@@ -1,7 +1,7 @@
 from pathlib import Path
+
 from decouple import config
 from django.urls import reverse_lazy
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -86,6 +86,8 @@ STATIC_ROOT = "static"
 # media files
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+CSRF_TRUSTED_ORIGINS = ["inclusive-course.uz", "127.0.0.1", "localhost"]
 
 
 UNFOLD = {
